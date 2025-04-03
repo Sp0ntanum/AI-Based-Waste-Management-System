@@ -4,6 +4,9 @@ from streamlit_folium import st_folium
 import numpy as np
 from keras.models import load_model
 from PIL import Image, ImageOps
+import plotly.express as px
+import pandas as pd
+
 # APP CONFIGURATION 
 st.set_page_config(layout="wide", page_title="♻ Smart Waste Classifier", page_icon="🌍")
 
@@ -126,17 +129,32 @@ with tab2:
         )
     
     if st.toggle("📈 Show My Waste Footprint"):
-        yearly_waste = {k: v / 1000 * 365 for k, v in st.session_state["waste_data"].items()}
-        total_waste = sum(yearly_waste.values())
-        st.subheader(f"🌍 Total Yearly Waste: {total_waste:.2f} kg")
-        for category, yearly_amount in yearly_waste.items():
-            st.markdown(f"✅ *{category}:* {yearly_amount:.2f} kg per year")
+        weekly_waste = {k: v / 1000 * 7 for k, v in st.session_state["waste_data"].items()}
+        monthly_waste = {k: v / 1000 * 30 for k, v in st.session_state["waste_data"].items()}
+        total_weekly = sum(weekly_waste.values())
+        total_monthly = sum(monthly_waste.values())
+        
+        st.subheader("🌍 Waste Breakdown")
+        st.write(f"**Total Weekly Waste:** {total_weekly:.2f} kg")
+        st.write(f"**Total Monthly Waste:** {total_monthly:.2f} kg")
+        
+        df_waste = pd.DataFrame({
+            "Category": list(st.session_state["waste_data"].keys()), 
+            "Weekly (kg)": list(weekly_waste.values()), 
+            "Monthly (kg)": list(monthly_waste.values())
+        })
+        
+        fig = px.bar(df_waste, x="Category", y=["Weekly (kg)", "Monthly (kg)"],
+                     title="Waste Generation (Weekly & Monthly)", barmode="group",
+                     labels={"value": "Weight (kg)", "variable": "Time Frame"},
+                     color_discrete_map={"Weekly (kg)": "lightcoral", "Monthly (kg)": "red"})
+        
+        st.plotly_chart(fig)
 
 # RECYCLING CENTER MAP SECTION 
 with tab3:
     st.subheader("📍 Nearby Recycling Centers")
 
-    # Define fixed recycling center locations
     recycling_centers = [
         {"name": "Green Earth Recycling", "lat": 31.5001, "lon": 76.2003},
         {"name": "EcoWaste Solutions", "lat": 31.4956, "lon": 76.2054},
@@ -144,26 +162,20 @@ with tab3:
         {"name": "Zero Waste Facility", "lat": 31.4789, "lon": 76.1921},
     ]
 
-    # Default map center
     map_center = [31.4818, 76.1905]
-
-    # Create the map
     m = folium.Map(location=map_center, zoom_start=13)
 
-    # Add Recycling Centers
     for center in recycling_centers:
         folium.Marker(
             [center["lat"], center["lon"]],
             popup=center["name"],
-            icon=folium.Icon(color="green", icon="recycle"),
+            icon=folium.Icon(color="green", icon="recycle", prefix='fa'),
         ).add_to(m)
 
-    # Add User Location Marker (Fixed)
     folium.Marker(
-        map_center, popup="Your Location", icon=folium.Icon(color="blue", icon="home")
+        map_center, popup="Your Location", icon=folium.Icon(color="blue", icon="home", prefix='fa')
     ).add_to(m)
 
-    # Display the map
     st_folium(m, width=700, height=400)
 
 # WASTE AWARENESS & EDUCATION HUB  
