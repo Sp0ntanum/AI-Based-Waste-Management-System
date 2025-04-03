@@ -5,14 +5,17 @@ import numpy as np
 from keras.models import load_model
 from PIL import Image, ImageOps
 
+# APP CONFIGURATION 
 st.set_page_config(layout="wide", page_title="♻ Smart Waste Classifier", page_icon="🌍")
 
+# LOAD MODEL
 @st.cache_resource()
 def load_waste_model():
     return load_model("keras_model.h5", compile=False), open("labels.txt", "r").readlines()
 
 model, class_names = load_waste_model()
 
+# WASTE CLASSIFICATION FUNCTION 
 def classify_waste(img):
     np.set_printoptions(suppress=True)
     data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
@@ -32,6 +35,7 @@ def classify_waste(img):
     
     return class_name, confidence_score
 
+# RECYCLING GUIDELINES 
 def get_recycling_guidelines(label):
     guidelines = {
         "cardboard": "Flatten boxes and remove any plastic or grease.",
@@ -41,10 +45,13 @@ def get_recycling_guidelines(label):
     }
     return guidelines.get(label.lower(), "No recycling information available.")
 
+# APP TITLE 
 st.title("♻ Smart Waste Classifier & EXP Tracker 🌱🏆")
 
+# NAVIGATION TABS 
 tab1, tab2, tab3 = st.tabs(["🏠 Home", "📊 Waste Tracker", "📍 Recycling Centers"])
 
+# WASTE CLASSIFICATION SECTION 
 with tab1:
     st.markdown("### 📸 Upload an Image for Waste Classification")
     input_img = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
@@ -87,6 +94,7 @@ with tab1:
                 st.write(f"**Confidence:** {confidence:.2f}%")
                 st.success(f"🎯 You earned **{exp_earned} EXP**!")
 
+                # Confidence Score Warning
                 if confidence < 60:
                     st.warning("⚠ The confidence score is low. The prediction may not be accurate.")
                 
@@ -107,8 +115,10 @@ with tab1:
         if st.button("🔄 Upload Another Image"):
             st.experimental_rerun()
 
+# WASTE FOOTPRINT TRACKER SECTION 
 with tab2:
     st.header("📊 Waste Footprint Tracker")
+
     if "waste_data" not in st.session_state:
         st.session_state["waste_data"] = {"Plastic": 0, "Metal": 0, "Cardboard": 0, "Food": 0, "Glass": 0}
     
@@ -128,9 +138,18 @@ with tab2:
         for category, yearly_amount in yearly_waste.items():
             st.markdown(f"✅ **{category}:** {yearly_amount:.2f} kg per year")
 
+# RECYCLING CENTER MAP SECTION 
 with tab3:
     st.subheader("📍 Nearby Recycling Centers")
+    
+    # Default location (example coordinates)
     user_location = [31.4818, 76.1905]
+
+    # Create the map
     m = folium.Map(location=user_location, zoom_start=13)
+
+    # Add a marker for the user's location
     folium.Marker(user_location, popup="Your Location", icon=folium.Icon(color="blue", icon="home")).add_to(m)
+
+    # Display the map
     st_folium(m, width=700, height=400)
