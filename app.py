@@ -87,8 +87,8 @@ with tab1:
                 if st.session_state["achievements"]:
                     for achievement in st.session_state["achievements"]:
                         st.success(achievement)
-                with st.expander("♻ Recycling Guidelines"):
-                    st.write(get_recycling_guidelines(label))
+                st.subheader("♻ Recycling Guidelines")
+                st.write(get_recycling_guidelines(label))
         if st.button("🔄 Upload Another Image"):
             st.session_state["uploaded_file"] = None
 
