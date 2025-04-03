@@ -35,10 +35,10 @@ def classify_waste(img):
 
 def get_recycling_guidelines(label):
     guidelines = {
-        "cardboard": "✅ Remove plastic and grease before recycling. Flatten boxes to save space.",
-        "plastic": "✅ Rinse plastic containers. Check recycling symbols for local rules.",
-        "glass": "✅ Rinse bottles, remove lids. Do not recycle broken glass or ceramics.",
-        "metal": "✅ Clean metal containers. Do not mix with hazardous waste like batteries."
+        "cardboard": "✅ Recycling cardboard helps reduce waste and conserve resources. Before recycling, remove any plastic, food residue, or grease stains, as contaminated cardboard is not recyclable. Flatten boxes to save space and ensure they are dry, as wet or greasy cardboard (like pizza boxes) should be composted or disposed of separately. Most clean cardboard, including shipping boxes and packaging, can be placed in curbside recycling bins or taken to local recycling centers. Proper recycling helps reduce landfill waste and supports a sustainable environment.",
+        "plastic": "✅ Recycling plastic helps reduce pollution and conserve resources. Before recycling, rinse plastic containers to remove residue and check for recycling symbols to determine if they are accepted locally. Hard plastics like bottles and food containers are commonly recyclable, while soft plastics like bags and wrappers may require special drop-off programs. Avoid recycling contaminated or mixed-material plastics, such as coated packaging. Proper sorting and disposal ensure plastics can be effectively processed and repurposed, reducing environmental impact.",
+        "glass": "✅ Recycling glass reduces waste and conserves raw materials. Before recycling, rinse glass containers to remove residue and remove any lids or caps, as they may be made of different materials. Most glass bottles and jars are recyclable, but items like mirrors, window glass, ceramics, and light bulbs require special disposal. Sorting glass by color (clear, green, brown) may be required in some areas. Glass can be recycled indefinitely without losing quality, making proper recycling essential for sustainability.",
+        "metal": "✅ Recycling metal waste conserves resources and reduces pollution. Clean and sort metals like aluminum, steel, and copper before recycling. Avoid placing hazardous items like batteries and gas cylinders in regular bins; instead, take them to specialized facilities. Many metals, including large appliances and car parts, can be recycled at scrap yards or designated centers, sometimes for monetary value. Proper recycling minimizes waste and supports sustainability."
     }
     return guidelines.get(label.lower(), "No recycling information available.")
 
@@ -46,7 +46,7 @@ st.markdown("""
     <style>
         .big-font { font-size:25px !important; }
         .exp-bar .stProgress > div > div { background-color: #4CAF50; }
-        .sidebar-style { background-color: #f8f9fa; padding: 20px; border-radius: 10px; }
+        .sidebar-style { background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: -20px; }
         .hover-button:hover { background-color: #28a745 !important; color: white !important; }
     </style>
 """, unsafe_allow_html=True)
@@ -76,7 +76,7 @@ with st.sidebar:
         yearly_waste = {k: v / 1000 * 365 for k, v in st.session_state["waste_data"].items()}
         total_waste = sum(yearly_waste.values())
         
-        st.subheader(f"🌍 *Total Yearly Waste: {total_waste:.2f} kg*")
+        st.subheader(f"🌍 Total Yearly Waste: {total_waste:.2f} kg")
         for category, yearly_amount in yearly_waste.items():
             st.write(f"✅ {category}: {yearly_amount:.2f} kg per year")
     st.markdown("</div>", unsafe_allow_html=True)
@@ -117,8 +117,7 @@ if input_img is not None:
             image_file = Image.open(input_img)
             label, confidence_score = classify_waste(image_file)
             exp_earned = earn_exp(label)
-            st.success(f"✅ *{label.upper()} detected! You earned {exp_earned} EXP!* 🎉")
-            st.success(f"♻ *Recycling Tip:* {get_recycling_guidelines(label)}")
+            st.success(f"✅ {label.upper()} detected! You earned {exp_earned} EXP! 🎉")
             check_achievements()
 
         with col2:
@@ -131,11 +130,11 @@ if input_img is not None:
             if st.session_state["achievements"]:
                 for achievement in st.session_state["achievements"]:
                     st.success(achievement)
-
-st.success(f"💡 Eco Tip: {random.choice(['🌱 Bring your own reusable bags when shopping.', '💧 Save water by turning off the tap while brushing.', '🔋 Recycle old batteries at designated collection points.', '🍃 Compost food waste to enrich soil naturally.', '🚲 Use a bike or walk instead of driving short distances.'])}")
+                    
+            st.success(f"♻ Recycling Tip: {get_recycling_guidelines(label)}")
 
 st.markdown("---")
-st.info("♻ *Track your waste, earn EXP, and make the world greener!* 🌱💚")
+st.info("♻ Track your waste, earn EXP, and make the world greener! 🌱💚")
 
 def show_recycling_map():
     st.subheader("📍 Nearby Recycling Centers")
