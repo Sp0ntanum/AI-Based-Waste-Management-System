@@ -107,7 +107,8 @@ with tab1:
                 st.write(get_recycling_guidelines(label))
 
         if st.button("🔄 Upload Another Image"):
-            st.experimental_rerun()
+            st.rerun()
+
 
 # WASTE FOOTPRINT TRACKER SECTION 
 with tab2:
