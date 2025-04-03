@@ -8,7 +8,8 @@ from PIL import Image, ImageOps
 import random
 import time
 
-st.set_page_config(layout="wide", page_title="♻ Smart Waste Classifier", page_icon="🌍")
+# user interface design 
+st.set_page_config(layout="wide", page_title="♻ Smart Waste Classifier", page_icon="🌍") 
 
 @st.cache_resource()
 def load_waste_model():
@@ -16,6 +17,7 @@ def load_waste_model():
 
 model, class_names = load_waste_model()
 
+# input image for classfication
 def classify_waste(img):
     np.set_printoptions(suppress=True)
     
@@ -136,30 +138,28 @@ if input_img is not None:
 st.markdown("---")
 st.info("♻ Track your waste, earn EXP, and make the world greener! 🌱💚")
 
-def show_recycling_map():
+def show_recycling_map(): # creating map
+    # code for static map location
     st.subheader("📍 Nearby Recycling Centers")
-    
-    # User's location
+
+    # compile time location input
     user_location = [31.48181963943555, 76.19054117377216]
-    
-    # List of sample recycling centers (replace with real data if needed)
+
+    # location of the centers
     recycling_centers = [
         {"name": "Green Earth Recycling", "lat": 31.483, "lon": 76.195},
         {"name": "EcoCycle Center", "lat": 31.479, "lon": 76.185},
         {"name": "Waste Wise Hub", "lat": 31.485, "lon": 76.192},
     ]
     
-    # Create map
     m = folium.Map(location=user_location, zoom_start=13)
     
-    # Add user's location marker
     folium.Marker(
         location=user_location,
         popup="Your Location",
         icon=folium.Icon(color="blue", icon="home")
     ).add_to(m)
     
-    # Add recycling center markers
     for center in recycling_centers:
         folium.Marker(
             location=[center["lat"], center["lon"]],
@@ -167,9 +167,7 @@ def show_recycling_map():
             icon=folium.Icon(color="green", icon="recycle")
         ).add_to(m)
     
-    # Display map in Streamlit
     st_folium(m, width=700, height=400)
 
-# Show map below classification results
 st.markdown("---")
 show_recycling_map()
