@@ -7,6 +7,78 @@ from PIL import Image, ImageOps
 
 st.set_page_config(layout="wide", page_title="♻ Smart Waste Classifier", page_icon="🌍")
 
+st.markdown("""
+    <style>
+    /* Light Mode */
+    .stApp {
+        background-color: #f5f7fa;
+        font-family: 'Arial', sans-serif;
+        color: #333;
+    }
+    
+    .info-card {
+        background-color: #ffffff;
+        color: #333;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    /* Dark Mode */
+    @media (prefers-color-scheme: dark) {
+        .stApp {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .info-card {
+            background-color: #1e1e1e !important;
+            color: #e0e0e0 !important;
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
+        }
+        .stButton>button {
+            background-color: #555;
+            color: white;
+        }
+        .stButton>button:hover {
+            background-color: #777;
+        }
+        .stProgress>div>div {
+            background-color: #4CAF50 !important;
+        }
+    }
+
+    /* Title Styling */
+    h1 {
+        color: #1f6f8b;
+        text-align: center;
+        font-size: 36px;
+        font-weight: bold;
+    }
+
+    /* Buttons */
+    .stButton>button {
+        background-color: #1f6f8b;
+        color: white;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        transition: 0.3s;
+    }
+
+    .stButton>button:hover {
+        background-color: #99a8b2;
+    }
+
+    /* Progress Bar */
+    .stProgress>div>div {
+        background-color: #1f6f8b !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+
 @st.cache_resource()
 def load_waste_model():
     return load_model("keras_model.h5", compile=False), open("labels.txt", "r").readlines()
@@ -28,7 +100,7 @@ def classify_waste(img):
     prediction = model.predict(data)
     index = np.argmax(prediction)
     class_name = class_names[index].strip().split(" ")[1].strip()
-    confidence_score = prediction[0][index] * 100  # Convert to percentage
+    confidence_score = prediction[0][index] * 100
     
     return class_name, confidence_score
 
@@ -41,7 +113,7 @@ def get_recycling_guidelines(label):
     }
     return guidelines.get(label.lower(), "No recycling information available.")
 
-st.title("♻ Waste Classifier & EXP Tracker 🌱🏆")
+st.title("♻ Smart Waste Classifier & EXP Tracker 🌱🏆")
 
 tab1, tab2, tab3 = st.tabs(["🏠 Home", "📊 Waste Tracker", "📍 Recycling Centers"])
 
@@ -80,33 +152,36 @@ with tab1:
                 st.image(input_img, use_container_width=True)
                 image_file = Image.open(input_img)
                 with st.spinner("🔄 Classifying... Please wait"):
-                 label, confidence = classify_waste(image_file)
+                    label, confidence = classify_waste(image_file)
                 exp_earned = earn_exp(label)
-                
-                if confidence >= 80:
-                    st.success(f"✅ {label.upper()} detected with **{confidence:.2f}% confidence!** 🟢 High confidence! You earned {exp_earned} EXP! 🎉")
-                elif 60 <= confidence < 80:
-                    st.info(f"✅ {label.upper()} detected with **{confidence:.2f}% confidence!** 🟡 Moderate confidence. You earned {exp_earned} EXP! 🎉")
-                else:
-                    st.warning(f"⚠ {label.upper()} detected with **{confidence:.2f}% confidence!** 🔴 Low confidence. Consider re-uploading a clearer image!")
-                    st.info("💡 Try using a well-lit image with a plain background for better accuracy.")
 
+                st.markdown(f"""
+                <div class='info-card'>
+                    <h3>✅ {label.upper()} detected</h3>
+                    <p><strong>Confidence: {confidence:.2f}%</strong></p>
+                    <p>🎯 You earned <strong>{exp_earned} EXP</strong>!</p>
+                </div>
+                """, unsafe_allow_html=True)
+
+                if confidence < 60:
+                    st.warning("⚠ The confidence score is low. The prediction may not be accurate.")
+                
                 check_achievements()
             
             with col2:
-                st.subheader("🏆 EXP Progress")
+                st.markdown("<h3 style='text-align: center;'>🏆 Your EXP Progress</h3>", unsafe_allow_html=True)
                 st.write(f"🎯 Your EXP Progress: {st.session_state['exp']} / 500")
                 st.progress(min(st.session_state["exp"] / 500, 1.0))
-                
+
                 if st.session_state["achievements"]:
                     for achievement in st.session_state["achievements"]:
                         st.success(achievement)
-                
+
                 st.subheader("♻ Recycling Guidelines")
                 st.write(get_recycling_guidelines(label))
 
         if st.button("🔄 Upload Another Image"):
-            st.session_state["uploaded_file"] = None
+            st.experimental_rerun()
 
 with tab2:
     st.header("📊 Waste Footprint Tracker")
@@ -132,13 +207,6 @@ with tab2:
 with tab3:
     st.subheader("📍 Nearby Recycling Centers")
     user_location = [31.4818, 76.1905]
-    recycling_centers = [
-        {"name": "Green Earth Recycling", "lat": 31.483, "lon": 76.195},
-        {"name": "EcoCycle Center", "lat": 31.479, "lon": 76.185},
-        {"name": "Waste Wise Hub", "lat": 31.485, "lon": 76.192},
-    ]
     m = folium.Map(location=user_location, zoom_start=13)
-    folium.Marker(location=user_location, popup="Your Location", icon=folium.Icon(color="blue", icon="home")).add_to(m)
-    for center in recycling_centers:
-        folium.Marker(location=[center["lat"], center["lon"]], popup=center["name"], icon=folium.Icon(color="green", icon="recycle")).add_to(m)
+    folium.Marker(user_location, popup="Your Location", icon=folium.Icon(color="blue", icon="home")).add_to(m)
     st_folium(m, width=700, height=400)
