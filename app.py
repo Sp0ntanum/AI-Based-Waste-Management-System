@@ -38,18 +38,18 @@ def classify_waste(img):
 # RECYCLING GUIDELINES 
 def get_recycling_guidelines(label):
     guidelines = {
-        "cardboard": "Recycling cardboard helps reduce waste and conserve resources. Before recycling, remove any plastic, food residue, or grease stains, as contaminated cardboard is not recyclable. Flatten boxes to save space and ensure they are dry, as wet or greasy cardboard (like pizza boxes) should be composted or disposed of separately. Most clean cardboard, including shipping boxes and packaging, can be placed in curbside recycling bins or taken to local recycling centers. Proper recycling helps reduce landfill waste and supports a sustainable environment.",
-         "plastic": "Recycling plastic helps reduce pollution and conserve resources. Before recycling, rinse plastic containers to remove residue and check for recycling symbols to determine if they are accepted locally. Hard plastics like bottles and food containers are commonly recyclable, while soft plastics like bags and wrappers may require special drop-off programs. Avoid recycling contaminated or mixed-material plastics, such as coated packaging. Proper sorting and disposal ensure plastics can be effectively processed and repurposed, reducing environmental impact.",
-         "glass": "Recycling glass reduces waste and conserves raw materials. Before recycling, rinse glass containers to remove residue and remove any lids or caps, as they may be made of different materials. Most glass bottles and jars are recyclable, but items like mirrors, window glass, ceramics, and light bulbs require special disposal. Sorting glass by color (clear, green, brown) may be required in some areas. Glass can be recycled indefinitely without losing quality, making proper recycling essential for sustainability.",
-         "metal": "Recycling metal waste conserves resources and reduces pollution. Clean and sort metals like aluminum, steel, and copper before recycling. Avoid placing hazardous items like batteries and gas cylinders in regular bins; instead, take them to specialized facilities. Many metals, including large appliances and car parts, can be recycled at scrap yards or designated centers, sometimes for monetary value. Proper recycling minimizes waste and supports sustainability."
+        "cardboard": "Remove any plastic, food residue, or grease stains before recycling.",
+        "plastic": "Rinse plastic containers and check for recycling symbols to ensure proper disposal.",
+        "glass": "Rinse glass containers and remove lids before recycling.",
+        "metal": "Sort aluminum, steel, and other metals. Hazardous items like batteries need special disposal.",
     }
-    return guidelines.get(label.lower(), "No recycling information available.")
+    return guidelines.get(label.lower(), "No specific recycling information available.")
 
 # APP TITLE 
 st.title("♻ Smart Waste Classifier & EXP Tracker 🌱🏆")
 
 # NAVIGATION TABS 
-tab1, tab2, tab3 = st.tabs(["🏠 Home", "📊 Waste Tracker", "📍 Recycling Centers"])
+tab1, tab2, tab3, tab4 = st.tabs(["🏠 Home", "📊 Waste Tracker", "📍 Recycling Centers", "📖 Education Hub"])
 
 # WASTE CLASSIFICATION SECTION 
 with tab1:
@@ -86,8 +86,8 @@ with tab1:
                 exp_earned = earn_exp(label)
 
                 st.subheader(f"✅ {label.upper()} detected")
-                st.write(f"**Confidence:** {confidence:.2f}%")
-                st.success(f"🎯 You earned **{exp_earned} EXP**!")
+                st.write(f"*Confidence:* {confidence:.2f}%")
+                st.success(f"🎯 You earned *{exp_earned} EXP*!")
 
                 if confidence < 60:
                     st.warning("⚠ The confidence score is low. The prediction may not be accurate.")
@@ -130,7 +130,7 @@ with tab2:
         total_waste = sum(yearly_waste.values())
         st.subheader(f"🌍 Total Yearly Waste: {total_waste:.2f} kg")
         for category, yearly_amount in yearly_waste.items():
-            st.markdown(f"✅ **{category}:** {yearly_amount:.2f} kg per year")
+            st.markdown(f"✅ *{category}:* {yearly_amount:.2f} kg per year")
 
 # RECYCLING CENTER MAP SECTION 
 with tab3:
@@ -165,3 +165,41 @@ with tab3:
 
     # Display the map
     st_folium(m, width=700, height=400)
+
+# WASTE AWARENESS & EDUCATION HUB  
+with tab4:
+    st.header("📖 Waste Awareness & Education Hub")
+
+    # Interactive Quiz
+    st.subheader("🎯 Test Your Recycling Knowledge!")
+    quiz_question = "Which type of plastic is commonly recyclable?"
+    quiz_options = ["PET (Plastic #1)", "PVC (Plastic #3)", "Polystyrene (Plastic #6)"]
+    answer = st.radio(quiz_question, quiz_options)
+    
+    if st.button("Check Answer"):
+        if answer == "PET (Plastic #1)":
+            st.success("✅ Correct! PET is widely accepted for recycling.")
+        else:
+            st.error("❌ Incorrect. Try again!")
+
+    # Educational Videos
+    st.subheader("📺 Watch & Learn")
+    st.video("https://www.youtube.com/watch?v=6jQ7y_qQYUA")  # Updated working video
+
+    # Sustainability Articles
+    st.subheader("📚 Sustainability Articles")
+    st.write("[♻ How to Reduce Waste at Home](https://www.epa.gov/recycle)")
+    st.write("[🌍 The Importance of Recycling](https://earth911.com/recycling/)")  # Updated valid link
+
+    # Sustainable Shopping Suggestions
+    st.subheader("🛍 Sustainable Shopping Suggestions")
+    st.write("- Buy reusable bags instead of plastic bags.")
+    st.write("- Choose products with minimal packaging.")
+    st.write("- Support brands that use eco-friendly materials.")
+    st.write("- Invest in high-quality, long-lasting items.")
+
+    # Eco-Friendly Newsletters
+    st.subheader("📩 Subscribe to Monthly Eco-News")
+    email = st.text_input("Enter your email to receive sustainability tips:")
+    if st.button("Subscribe"):
+        st.success("✅ Subscription successful! Stay tuned for eco-friendly tips.")
