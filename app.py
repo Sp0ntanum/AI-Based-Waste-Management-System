@@ -82,9 +82,14 @@ with tab1:
                 with st.spinner("🔄 Classifying... Please wait"):
                  label, confidence = classify_waste(image_file)
                 exp_earned = earn_exp(label)
-                st.success(f"✅ {label.upper()} detected with {confidence:.2f}% confidence! You earned {exp_earned} EXP! 🎉")
-                if confidence < 60:
-                    st.warning("⚠ The confidence score is low. The prediction may not be accurate.")
+                
+                if confidence >= 80:
+                    st.success(f"✅ {label.upper()} detected with **{confidence:.2f}% confidence!** 🟢 High confidence! You earned {exp_earned} EXP! 🎉")
+                elif 60 <= confidence < 80:
+                    st.info(f"✅ {label.upper()} detected with **{confidence:.2f}% confidence!** 🟡 Moderate confidence. You earned {exp_earned} EXP! 🎉")
+                else:
+                    st.warning(f"⚠ {label.upper()} detected with **{confidence:.2f}% confidence!** 🔴 Low confidence. Consider re-uploading a clearer image!")
+                    st.info("💡 Try using a well-lit image with a plain background for better accuracy.")
 
                 check_achievements()
             
