@@ -4,7 +4,7 @@ from streamlit_folium import st_folium
 import numpy as np
 from keras.models import load_model
 from PIL import Image, ImageOps
-
+#krish
 # APP CONFIGURATION 
 st.set_page_config(layout="wide", page_title="♻ Smart Waste Classifier", page_icon="🌍")
 
