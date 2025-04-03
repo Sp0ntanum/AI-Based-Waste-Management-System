@@ -79,13 +79,10 @@ with tab1:
             with col1:
                 st.image(input_img, use_container_width=True)
                 image_file = Image.open(input_img)
-                label, confidence = classify_waste(image_file)
+                with st.spinner("🔄 Classifying... Please wait"):
+                 label, confidence = classify_waste(image_file)
                 exp_earned = earn_exp(label)
-                
-                # Show classification result
                 st.success(f"✅ {label.upper()} detected with {confidence:.2f}% confidence! You earned {exp_earned} EXP! 🎉")
-                
-                # Warning if confidence is low
                 if confidence < 60:
                     st.warning("⚠ The confidence score is low. The prediction may not be accurate.")
 
