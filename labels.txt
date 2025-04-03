@@ -1,0 +1,4 @@
+0 cardboard
+1 glass
+2 plastic
+3 metal
