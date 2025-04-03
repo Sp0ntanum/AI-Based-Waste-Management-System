@@ -7,78 +7,6 @@ from PIL import Image, ImageOps
 
 st.set_page_config(layout="wide", page_title="♻ Smart Waste Classifier", page_icon="🌍")
 
-st.markdown("""
-    <style>
-    /* Light Mode */
-    .stApp {
-        background-color: #f5f7fa;
-        font-family: 'Arial', sans-serif;
-        color: #333;
-    }
-    
-    .info-card {
-        background-color: #ffffff;
-        color: #333;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    /* Dark Mode */
-    @media (prefers-color-scheme: dark) {
-        .stApp {
-            background-color: #121212;
-            color: #e0e0e0;
-        }
-        .info-card {
-            background-color: #1e1e1e !important;
-            color: #e0e0e0 !important;
-            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
-        }
-        .stButton>button {
-            background-color: #555;
-            color: white;
-        }
-        .stButton>button:hover {
-            background-color: #777;
-        }
-        .stProgress>div>div {
-            background-color: #4CAF50 !important;
-        }
-    }
-
-    /* Title Styling */
-    h1 {
-        color: #1f6f8b;
-        text-align: center;
-        font-size: 36px;
-        font-weight: bold;
-    }
-
-    /* Buttons */
-    .stButton>button {
-        background-color: #1f6f8b;
-        color: white;
-        border-radius: 10px;
-        padding: 10px 20px;
-        font-size: 16px;
-        transition: 0.3s;
-    }
-
-    .stButton>button:hover {
-        background-color: #99a8b2;
-    }
-
-    /* Progress Bar */
-    .stProgress>div>div {
-        background-color: #1f6f8b !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-
 @st.cache_resource()
 def load_waste_model():
     return load_model("keras_model.h5", compile=False), open("labels.txt", "r").readlines()
@@ -155,13 +83,9 @@ with tab1:
                     label, confidence = classify_waste(image_file)
                 exp_earned = earn_exp(label)
 
-                st.markdown(f"""
-                <div class='info-card'>
-                    <h3>✅ {label.upper()} detected</h3>
-                    <p><strong>Confidence: {confidence:.2f}%</strong></p>
-                    <p>🎯 You earned <strong>{exp_earned} EXP</strong>!</p>
-                </div>
-                """, unsafe_allow_html=True)
+                st.subheader(f"✅ {label.upper()} detected")
+                st.write(f"**Confidence:** {confidence:.2f}%")
+                st.success(f"🎯 You earned **{exp_earned} EXP**!")
 
                 if confidence < 60:
                     st.warning("⚠ The confidence score is low. The prediction may not be accurate.")
@@ -169,7 +93,7 @@ with tab1:
                 check_achievements()
             
             with col2:
-                st.markdown("<h3 style='text-align: center;'>🏆 Your EXP Progress</h3>", unsafe_allow_html=True)
+                st.subheader("🏆 Your EXP Progress")
                 st.write(f"🎯 Your EXP Progress: {st.session_state['exp']} / 500")
                 st.progress(min(st.session_state["exp"] / 500, 1.0))
 
