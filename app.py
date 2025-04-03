@@ -38,10 +38,10 @@ def classify_waste(img):
 # RECYCLING GUIDELINES 
 def get_recycling_guidelines(label):
     guidelines = {
-        "cardboard": "Recycling cardboard helps reduce waste and conserve resources. Before recycling, remove any plastic, food residue, or grease stains, as contaminated cardboard is not recyclable. Flatten boxes to save space and ensure they are dry, as wet or greasy cardboard (like pizza boxes) should be composted or disposed of separately. Most clean cardboard, including shipping boxes and packaging, can be placed in curbside recycling bins or taken to local recycling centers. Proper recycling helps reduce landfill waste and supports a sustainable environment.",
-        "plastic": "Recycling plastic helps reduce pollution and conserve resources. Before recycling, rinse plastic containers to remove residue and check for recycling symbols to determine if they are accepted locally. Hard plastics like bottles and food containers are commonly recyclable, while soft plastics like bags and wrappers may require special drop-off programs. Avoid recycling contaminated or mixed-material plastics, such as coated packaging. Proper sorting and disposal ensure plastics can be effectively processed and repurposed, reducing environmental impact.",
-        "glass": "Recycling glass reduces waste and conserves raw materials. Before recycling, rinse glass containers to remove residue and remove any lids or caps, as they may be made of different materials. Most glass bottles and jars are recyclable, but items like mirrors, window glass, ceramics, and light bulbs require special disposal. Sorting glass by color (clear, green, brown) may be required in some areas. Glass can be recycled indefinitely without losing quality, making proper recycling essential for sustainability.",
-        "metal": "Recycling metal waste conserves resources and reduces pollution. Clean and sort metals like aluminum, steel, and copper before recycling. Avoid placing hazardous items like batteries and gas cylinders in regular bins; instead, take them to specialized facilities. Many metals, including large appliances and car parts, can be recycled at scrap yards or designated centers, sometimes for monetary value. Proper recycling minimizes waste and supports sustainability."
+        "cardboard": "Flatten and keep dry before recycling.",
+        "plastic": "Rinse and check recycling symbols before disposal.",
+        "glass": "Remove lids and rinse before recycling.",
+        "metal": "Clean and sort metals before disposal."
     }
     return guidelines.get(label.lower(), "No recycling information available.")
 
@@ -68,12 +68,7 @@ with tab1:
         return earned
     
     def check_achievements():
-        milestones = {
-            50: "🌱 Eco Starter",
-            100: "♻ Waste Warrior",
-            200: "🌍 Green Hero",
-            500: "🏆 Planet Protector"
-        }
+        milestones = {50: "🌱 Eco Starter", 100: "♻ Waste Warrior", 200: "🌍 Green Hero", 500: "🏆 Planet Protector"}
         for exp_needed, achievement in milestones.items():
             if exp_needed <= st.session_state["exp"] and achievement not in st.session_state["achievements"]:
                 st.session_state["achievements"].append(achievement)
@@ -94,7 +89,6 @@ with tab1:
                 st.write(f"**Confidence:** {confidence:.2f}%")
                 st.success(f"🎯 You earned **{exp_earned} EXP**!")
 
-                # Confidence Score Warning
                 if confidence < 60:
                     st.warning("⚠ The confidence score is low. The prediction may not be accurate.")
                 
@@ -141,15 +135,33 @@ with tab2:
 # RECYCLING CENTER MAP SECTION 
 with tab3:
     st.subheader("📍 Nearby Recycling Centers")
-    
-    # Default location (example coordinates)
-    user_location = [31.4818, 76.1905]
+
+    # Define fixed recycling center locations
+    recycling_centers = [
+        {"name": "Green Earth Recycling", "lat": 31.5001, "lon": 76.2003},
+        {"name": "EcoWaste Solutions", "lat": 31.4956, "lon": 76.2054},
+        {"name": "Sustainable Recycling Hub", "lat": 31.4823, "lon": 76.1987},
+        {"name": "Zero Waste Facility", "lat": 31.4789, "lon": 76.1921},
+    ]
+
+    # Default map center
+    map_center = [31.4818, 76.1905]
 
     # Create the map
-    m = folium.Map(location=user_location, zoom_start=13)
+    m = folium.Map(location=map_center, zoom_start=13)
 
-    # Add a marker for the user's location
-    folium.Marker(user_location, popup="Your Location", icon=folium.Icon(color="blue", icon="home")).add_to(m)
+    # Add Recycling Centers
+    for center in recycling_centers:
+        folium.Marker(
+            [center["lat"], center["lon"]],
+            popup=center["name"],
+            icon=folium.Icon(color="green", icon="recycle"),
+        ).add_to(m)
+
+    # Add User Location Marker (Fixed)
+    folium.Marker(
+        map_center, popup="Your Location", icon=folium.Icon(color="blue", icon="home")
+    ).add_to(m)
 
     # Display the map
     st_folium(m, width=700, height=400)
